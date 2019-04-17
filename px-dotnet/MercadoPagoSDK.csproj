@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <FileAlignment>512</FileAlignment>
     <PackageId>Lexim.MercadoPago.Sdk</PackageId>
-    <PackageVersion>2.0.3</PackageVersion>
+    <PackageVersion>2.0.4</PackageVersion>
     <Authors>Federico Berasategui, Williner Rafael, Zachary Gerardo, Joel Ibaceta</Authors>
     <Description>Unofficial .NET MercadoPago SDK</Description>
     <Owners>Lexim</Owners>
@@ -17,7 +17,7 @@
     <Product>Lexim MercadoPago SDK</Product>
     <PackageIconUrl>https://user-images.githubusercontent.com/13060549/44829388-ef4c7200-abf2-11e8-9659-c1c40d114491.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/LeximSoluciones/Lexim-MercadoPago-Sdk</RepositoryUrl>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <PackageLicenseUrl>https://github.com/LeximSoluciones/Lexim-MercadoPago-Sdk/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <ItemGroup>
@@ -35,7 +35,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="Remotion.Linq" Version="2.2.0" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.ComponentModel.Annotations">
       <Version>4.5.0</Version>

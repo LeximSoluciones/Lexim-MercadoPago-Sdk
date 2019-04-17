@@ -1,6 +1,11 @@
 # Lexim MercadoPago SDK - Change Log
 
-## 2.0.3 (Current)
+## 2.0.4 (Current)
+  - Updated "Preapproval" with the lastest API version.
+  - Added resource "AuthorizedPayment".
+  - Added IPN support to "AuthorizedPayment" and "Preapproval".
+
+## 2.0.3
   - Added "status, date_created, last_modified" to Preapproval.
 
 ## 2.0.2
