@@ -174,6 +174,25 @@ namespace MercadoPago.Resources
     {
         public async Task<Refund> SaveAsync() => await PostAsync($"/v1/payments/{PaymentId}/refunds");
     }
+
+    public partial class AuthorizedPayment
+    {
+        /// <summary>
+        /// Find an authorized payment trought an unique identifier with Local Cache Flag
+        /// </summary>
+        public static async Task<AuthorizedPayment> FindByIdAsync(long? id, bool useCache = false, string accessToken = null) =>
+            await GetAsync($"/authorized_payments/{id}", accessToken, useCache);
+
+        /// <summary>
+        /// Save an authorized payment
+        /// </summary>
+        public async Task<AuthorizedPayment> SaveAsync() => await PostAsync("/authorized_payments");
+
+        /// <summary>
+        ///  Update editable properties
+        /// </summary>
+        public async Task<AuthorizedPayment> UpdateAsync() => await PutAsync($"/authorized_payments/{Id}");
+    }
 }
 
 #endif
