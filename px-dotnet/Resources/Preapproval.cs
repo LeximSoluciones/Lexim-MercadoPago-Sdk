@@ -72,7 +72,7 @@ namespace MercadoPago.Resources
         /// <summary>
         ///  Application ID of payee
         /// </summary>
-        public int? ApplicationId { get; set; }
+        public long? ApplicationId { get; set; }
 
         /// <summary>
         /// Current preapproval status
