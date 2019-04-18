@@ -9,6 +9,7 @@ namespace MercadoPago
     public class SDK
     {
         private const string DefaultBaseUrl = "https://api.mercadopago.com";
+        private static readonly object AccessTokenLock = new object();
 
         internal static string RefreshToken = null;
 
@@ -168,11 +169,15 @@ namespace MercadoPago
         /// Authenticate with MercadoPago API, using SDK.ClientId and SDK.ClientSecret. The resulting token is stored in the SDK.AccessToken property.
         /// </summary>
         /// <returns>A valid access token.</returns>
-        public static string GetAccessToken() 
-        {
+        public static string GetAccessToken()
+        {            
             if (string.IsNullOrEmpty(AccessToken))
             {
-                AccessToken = MPCredentials.GetAccessToken(ClientId, ClientSecret);
+                lock(AccessTokenLock)
+                {
+                    if (string.IsNullOrEmpty(AccessToken))
+                        AccessToken = MPCredentials.GetAccessToken(ClientId, ClientSecret);
+                }
             }
             return AccessToken;
         }

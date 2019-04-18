@@ -4,6 +4,7 @@
   - Updated "Preapproval" with the lastest API version.
   - Added resource "AuthorizedPayment".
   - Added IPN support to "AuthorizedPayment" and "Preapproval".
+  - Now GetAccessToken is thread safe.
 
 ## 2.0.3
   - Added "status, date_created, last_modified" to Preapproval.
