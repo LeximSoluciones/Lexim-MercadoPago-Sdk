@@ -51,7 +51,7 @@ namespace MercadoPago
         internal Task<T> DeleteAsync(string path, bool useCache = false, int requestTimeOut = 0, int retries = 1)
         {
             Send(this as T, HttpMethod.DELETE, path, useCache, requestTimeOut, retries);
-            return null;
+            return Task.FromResult<T>(null);
         }
 
         internal static async Task<T> SendAsync(T resource, HttpMethod httpMethod, string path, bool useCache = false, int requestTimeout = 0, int retries = 1)
