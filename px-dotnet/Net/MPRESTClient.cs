@@ -12,20 +12,20 @@ namespace MercadoPago
 {
     internal partial class MPRESTClient
     {
+        private IWebProxy _proxy;
+
+        public string ProxyHostName { get; set; }
+
+        public int ProxyPort { get; set; } = -1;
+
         /// <summary>
         /// class to simulate HttpClient class, available from .NET 4.0 onward.
         /// </summary>
         private class MPRequest
         {
-
             public HttpWebRequest Request { get; set; }
             public byte[] RequestPayload { get; set; }
-
         }
-
-
-        public string ProxyHostName = null;
-        public int ProxyPort = -1;
 
         static MPRESTClient()
         {
@@ -44,10 +44,7 @@ namespace MercadoPago
         /// <summary>
         /// Class constructor.
         /// </summary>
-        public MPRESTClient()
-        {
-            new MPRESTClient(null, -1);
-        }
+        public MPRESTClient() {}
 
         /// <summary>
         /// Set class variables.
@@ -56,21 +53,20 @@ namespace MercadoPago
         /// <param name="proxyPort">Proxy port to use in the proxy host.</param>
         public MPRESTClient(string proxyHostName, int proxyPort)
         {
-            this.ProxyHostName = proxyHostName;
-            this.ProxyPort = proxyPort;
+            _proxy = new WebProxy(proxyHostName, proxyPort);
+            ProxyHostName = proxyHostName;
+            ProxyPort = proxyPort;
         }
 
         public JToken ExecuteGenericRequest(
             HttpMethod httpMethod,
             string path,
             PayloadType payloadType,
-            JObject payload) 
+            JObject payload)
         {
- 
-
-            if (SDK.GetAccessToken() != null) { 
-                path = SDK.BaseUrl + path + "?access_token=" + SDK.GetAccessToken(); 
-
+            if (SDK.GetAccessToken() != null)
+            {
+                path = SDK.BaseUrl + path + "?access_token=" + SDK.GetAccessToken();
             }
 
             MPRequest mpRequest = CreateRequest(httpMethod, path, payloadType, payload, null, 0, 0);
@@ -104,27 +100,24 @@ namespace MercadoPago
 
         }
 
-		/// <summary>
-		/// Execute a request to an endpoint.
-		/// </summary>
-		/// <param name="httpMethod">Method to use in the request.</param>
-		/// <param name="path">Endpoint we are pointing.</param>
-		/// <param name="payloadType">Type of payload we are sending along with the request.</param>
-		/// <param name="payload">The data we are sending.</param>
-		/// <param name="colHeaders">Extra headers to send with the request.</param>
-		/// <returns>Api response with the result of the call.</returns>
-		public MPAPIResponse ExecuteRequest(
-            HttpMethod httpMethod, 
-            string path, 
+        /// <summary>
+        /// Execute a request to an endpoint.
+        /// </summary>
+        /// <param name="httpMethod">Method to use in the request.</param>
+        /// <param name="path">Endpoint we are pointing.</param>
+        /// <param name="payloadType">Type of payload we are sending along with the request.</param>
+        /// <param name="payload">The data we are sending.</param>
+        /// <param name="colHeaders">Extra headers to send with the request.</param>
+        /// <returns>Api response with the result of the call.</returns>
+        public MPAPIResponse ExecuteRequest(
+            HttpMethod httpMethod,
+            string path,
             PayloadType payloadType,
             JObject payload,
             bool includeHeaders,
             int requestTimeout,
             int retries)
         {
-
-            System.Diagnostics.Trace.WriteLine("Payload " + httpMethod + " request to " + path + " : " + payload);
-
             var headers =
                 includeHeaders
                     ? new WebHeaderCollection
@@ -146,6 +139,8 @@ namespace MercadoPago
 
         /// <summary>
         /// Core module implementation. Execute a request to an endpoint.
+        /// This method is deprecated and will be removed in a future version, please use the
+        /// <see cref="ExecuteRequest(HttpMethod, string, PayloadType, JObject, WebHeaderCollection, int, int)" /> method instead.
         /// </summary>
         /// <returns>Api response with the result of the call.</returns>
         internal MPAPIResponse ExecuteRequestCore(
@@ -205,6 +200,20 @@ namespace MercadoPago
             int connectionTimeout,
             int retries)
         {
+            var requestOptions = CreateRequestOptions(colHeaders, connectionTimeout, retries);
+            return CreateRequest(httpMethod, path, payloadType, payload, requestOptions);
+        }
+
+        /// <summary>
+        /// Create a request to use in the call to a certain endpoint.
+        /// </summary>
+        /// <returns>Api response with the result of the call.</returns>
+        private MPRequest CreateRequest(HttpMethod httpMethod,
+            string path,
+            PayloadType payloadType,
+            JObject payload,
+            MPRequestOptions requestOptions)
+        {
 
             if (string.IsNullOrEmpty(path))
                 throw new MPRESTException("Uri can not be an empty string.");
@@ -242,25 +251,14 @@ namespace MercadoPago
             mpRequest.Request = (HttpWebRequest)HttpWebRequest.Create(path);
             mpRequest.Request.Method = httpMethod.ToString();
 
-            if (connectionTimeout > 0)
+            if (requestOptions.Timeout > 0)
             {
-                mpRequest.Request.Timeout = connectionTimeout;
+                mpRequest.Request.Timeout = requestOptions.Timeout;
             }
-
-            if (colHeaders != null)
-            {
-                foreach (var header in colHeaders)
-                {
-                    mpRequest.Request.Headers.Add(header.ToString(), colHeaders[header.ToString()]);
-                }
-            }
-
-            mpRequest.Request.ContentType = "application/json";
-            mpRequest.Request.UserAgent = "MercadoPago DotNet SDK/1.0.30";
 
             if (payload != null) // POST & PUT
             {
-                byte[] data = null;
+                byte[] data;
                 if (payloadType != PayloadType.JSON)
                 {
                     var parametersDict = payload.ToObject<Dictionary<string, string>>();
@@ -284,7 +282,32 @@ namespace MercadoPago
                 mpRequest.RequestPayload = data;
             }
 
+            IWebProxy proxy = requestOptions.Proxy != null ? requestOptions.Proxy : (_proxy != null ? _proxy : SDK.Proxy);
+            if (proxy != null)
+            {
+                mpRequest.Request.Proxy = proxy;
+            }
+
             return mpRequest;
+        }
+
+        private MPRequestOptions CreateRequestOptions(WebHeaderCollection colHeaders, int connectionTimeout, int retries)
+        {
+            var headers = new Dictionary<string, string>();
+            if (colHeaders != null)
+            {
+                foreach (var header in colHeaders)
+                {
+                    headers.Add(header.ToString(), colHeaders[header.ToString()]);
+                }
+            }
+
+            return new MPRequestOptions
+            {
+                Timeout = connectionTimeout,
+                Retries = retries,
+                CustomHeaders = headers
+            };
         }
 
         #endregion

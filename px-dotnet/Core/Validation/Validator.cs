@@ -73,7 +73,7 @@ namespace MercadoPago.Validation
                 foreach (var e in result.Errors)
                     errorMessage.AppendLine($" - {e.Message}{Environment.NewLine}");
 
-                throw new Exception(errorMessage.ToString());
+                throw new MPException(errorMessage.ToString());
             }
         }
 

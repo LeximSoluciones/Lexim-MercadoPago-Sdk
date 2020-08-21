@@ -26,6 +26,22 @@ namespace MercadoPagoSDK.Test.Resources
         }
 
         [Test]
+        public void Payment_Create_EmptyShouldFail()
+        {
+            try
+            {
+                Payment payment = new Payment();
+                payment.Save();
+            }
+            catch (MPException e)
+            {
+                Assert.Pass();
+            }
+
+            Assert.Fail();
+        }
+
+        [Test]
         public void Payment_Create_ShouldBeOk()
         {
             var addInfPayerAdd = new Address

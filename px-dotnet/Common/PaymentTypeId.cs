@@ -20,6 +20,10 @@ namespace MercadoPago.Common
         ///<summary>Payment by debit card</summary>
         debit_card,
         ///<summary>Payment by prepaid card</summary>
-        prepaid_card
+        prepaid_card,
+        ///<summary>Payment by digital currency</summary>
+        digital_currency,
+        ///<summary>Payment by digital wallet (e.g. PayPal)</summary>
+        digital_wallet,
     }
 }

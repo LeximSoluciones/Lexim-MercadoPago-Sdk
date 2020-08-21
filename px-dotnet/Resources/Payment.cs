@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using MercadoPago.DataStructures.Customer;
 
 namespace MercadoPago.Resources
 {
@@ -17,6 +18,7 @@ namespace MercadoPago.Resources
     public sealed partial class Payment : Resource<Payment>
     {
         #region Actions
+
         /// <summary>
         /// Find a payment through an unique identifier with Local Cache Flag
         /// </summary>
@@ -40,6 +42,7 @@ namespace MercadoPago.Resources
         /// <summary>
         /// Get all payments acoording to specific filters, with using cache option
         /// </summary>
+        [Obsolete("string-based dictionary usage is discouraged. Please use the Query() method and LINQ instead.")]
         public static List<Payment> Search(Dictionary<string, string> filters, bool useCache = false, string accessToken = null) => 
             GetList("/v1/payments/search", accessToken, useCache, filters);
 
@@ -86,12 +89,17 @@ namespace MercadoPago.Resources
 
             if (refund.Id.HasValue)
             {
-                this.Status = PaymentStatus.refunded;
+                var payment = Payment.FindById(Id);
+                Status = payment.Status;
+                StatusDetail = payment.StatusDetail;
+                TransactionAmountRefunded = payment.TransactionAmountRefunded;
+                Refunds = payment.Refunds;
             }
             else
             {
-                //this.DelegateErrors(refund.Errors);
+                //Errors = refund.Errors;
             }
+
             return this;
         }
 
@@ -321,6 +329,12 @@ namespace MercadoPago.Resources
         /// Sponsor Identification
         /// </summary>
         public long? SponsorId { get; set; }
+
+        /// <summary>
+        /// Taxes for payments
+        /// </summary>
+        public List<Taxes> Taxes { get; set; }
         #endregion
+
     }
 }

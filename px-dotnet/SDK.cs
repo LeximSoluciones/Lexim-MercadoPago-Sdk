@@ -3,15 +3,23 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Net;
+using System.Reflection;
 
 namespace MercadoPago
 {
     public class SDK
     {
+        private const int DEFAULT_REQUESTS_TIMEOUT = 30000;
+        private const int DEFAULT_REQUESTS_RETRIES = 3;
         private const string DefaultBaseUrl = "https://api.mercadopago.com";
+                
+        private static string UserToken = null;
+        private static int _requestsTimeout = DEFAULT_REQUESTS_TIMEOUT;
+        private static int _requestsRetries = DEFAULT_REQUESTS_RETRIES;
+        private static IWebProxy _proxy;        
         private static readonly object AccessTokenLock = new object();
-
-        internal static string RefreshToken = null;
+        public static string RefreshToken = null;
 
         /// <summary>  
         ///  Property that represent the client secret token.
@@ -90,6 +98,29 @@ namespace MercadoPago
         /// </summary>
         public static string BaseUrl { get; private set; } = DefaultBaseUrl;
 
+        /// <summary>
+        /// Api requests timeout
+        /// </summary>
+        public static int RequestsTimeout {
+            get { return _requestsTimeout; }
+            set { _requestsTimeout = value; }
+        }
+
+        /// <summary>
+        /// Api requests retries
+        /// </summary>
+        public static int RequestsRetries {
+            get
+            { return _requestsRetries; }
+            set { _requestsRetries = value; }
+        }
+
+        public static IWebProxy Proxy
+        {
+            get { return _proxy; }
+            set { _proxy = value; }
+        }
+
         public static string Version { get; } = typeof(SDK).Assembly.GetName().Version.ToString();
 
 #if NET40
@@ -108,6 +139,36 @@ namespace MercadoPago
             configurationParams.TryGetValue("clientId", out _clientId);
             configurationParams.TryGetValue("accessToken", out _accessToken);
             configurationParams.TryGetValue("appId", out _appId);
+
+            String requestsTimeoutStr;
+            if (configurationParams.TryGetValue("requestsTimeout", out requestsTimeoutStr))
+            {
+                Int32.TryParse(requestsTimeoutStr, out _requestsTimeout);
+            }
+
+            String requestsRetriesStr;
+            if (configurationParams.TryGetValue("requestsRetries", out requestsRetriesStr))
+            {
+                Int32.TryParse(requestsRetriesStr, out _requestsRetries);
+            }
+
+            String proxyHostName;
+            String proxyPortStr;
+            int proxyPort;
+            if (configurationParams.TryGetValue("proxyHostName", out proxyHostName) 
+                && configurationParams.TryGetValue("proxyPort", out proxyPortStr)
+                && Int32.TryParse(proxyPortStr, out proxyPort))
+            {
+                _proxy = new WebProxy(proxyHostName, proxyPort);
+                
+                String proxyUsername;
+                String proxyPassword;
+                if (configurationParams.TryGetValue("proxyUsername", out proxyUsername)
+                    && configurationParams.TryGetValue("proxyPassword", out proxyPassword))
+                {
+                    _proxy.Credentials = new NetworkCredential(proxyUsername, proxyPassword);
+                }
+            }
         }
 
         /// <summary>
@@ -124,6 +185,27 @@ namespace MercadoPago
             _clientId = GetConfigValue(config, "ClientId");
             _accessToken = GetConfigValue(config, "AccessToken");
             _appId = GetConfigValue(config, "AppId");
+
+            String requestsTimeoutStr = GetConfigValue(config, "RequestsTimeout");
+            Int32.TryParse(requestsTimeoutStr, out _requestsTimeout);
+
+            String requestsRetriesStr = GetConfigValue(config, "RequestsRetries");
+            Int32.TryParse(requestsRetriesStr, out _requestsRetries);
+
+            String proxyHostName = GetConfigValue(config, "ProxyHostName");
+            String proxyPortStr = GetConfigValue(config, "ProxyPort");
+            int proxyPort;
+            if (!String.IsNullOrEmpty(proxyHostName) && Int32.TryParse(proxyPortStr, out proxyPort))
+            {
+                _proxy = new WebProxy(proxyHostName, proxyPort);
+                
+                String proxyUsername = GetConfigValue(config, "ProxyUsername");
+                String proxyPassword = GetConfigValue(config, "ProxyPassword");
+                if (!String.IsNullOrEmpty(proxyUsername) && !String.IsNullOrEmpty(proxyPassword))
+                {
+                    _proxy.Credentials = new NetworkCredential(proxyUsername, proxyPassword);
+                }
+            }
         }
 
 #endif

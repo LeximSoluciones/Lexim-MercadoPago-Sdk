@@ -1,7 +1,7 @@
 ﻿using System;
 namespace MercadoPago.DataStructures.Generic
 {
-    public struct BadParamsCause : RecuperableErrorCause
+    public struct BadParamsCause
     {
         public string Code { get; set; }
 

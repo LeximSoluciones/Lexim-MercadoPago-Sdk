@@ -155,7 +155,8 @@ namespace MercadoPago.Resources
         public List<ProcessingMode> ProcessingModes { get; set; } = new List<ProcessingMode>();
 
         public bool? BinaryMode { get; set; }
-        
+
+        public List<Tax> Taxes { get; set; } = new List<Tax>();
 
         #endregion
     }

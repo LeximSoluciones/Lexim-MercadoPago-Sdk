@@ -25,6 +25,6 @@ namespace MercadoPago.DataStructures.Customer
         /// <summary>
         /// Street number
         /// </summary>
-        public string StreetNumber { get; set; }
+        public int? StreetNumber { get; set; }
     }
 }

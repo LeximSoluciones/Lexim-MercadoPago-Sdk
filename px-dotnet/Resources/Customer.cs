@@ -24,7 +24,6 @@ namespace MercadoPago.Resources
         /// </summary>
         /// <param name="id">Customer ID.</param>
         /// <param name="useCache">Cache configuration.</param>
-        /// <param name="accessToken">OAuth Access Token (specific to this request).</param>
         /// <returns>Searched customer.</returns>
         public static Customer FindById(string id, bool useCache = false, string accessToken = null) => Get($"/v1/customers/{id}", accessToken, useCache);
 

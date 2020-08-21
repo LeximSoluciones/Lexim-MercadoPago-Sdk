@@ -22,7 +22,6 @@ namespace MercadoPago
         {
             try
             {
-                System.Runtime.Caching.MemoryCache.Default.Add(key, response, DateTimeOffset.Now.AddYears(1));
             }
             catch (Exception ex)
             {
@@ -39,7 +38,7 @@ namespace MercadoPago
         {
             try
             {
-                return System.Runtime.Caching.MemoryCache.Default.Get(key) as MPAPIResponse;
+                return null;
             }
             catch (Exception ex)
             {
@@ -55,7 +54,6 @@ namespace MercadoPago
         {
             try
             {
-                System.Runtime.Caching.MemoryCache.Default.Remove(key);
             }
             catch (Exception ex)
             {

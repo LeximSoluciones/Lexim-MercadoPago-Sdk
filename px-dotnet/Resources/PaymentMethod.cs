@@ -12,8 +12,8 @@ namespace MercadoPago.Resources
         /// <summary>
         /// Get All Payment Methods available
         /// </summary>
-        public static List<PaymentMethod> All(bool useCache = false, string accessToken = null) =>
-            GetList($"/v1/payment_methods", accessToken, useCache);
+        public static List<PaymentMethod> All(Sites site, bool useCache = false, string accessToken = null) =>
+            GetList($"/sites/{site}/payment_methods", accessToken, useCache);
 
         #endregion
 
@@ -42,12 +42,12 @@ namespace MercadoPago.Resources
         /// <summary>
         /// Logo to display on secure sites
         /// </summary>
-        public string SecureThumbail { get; set; }
+        public string SecureThumbnail { get; set; }
 
         /// <summary>
         /// Logo to show
         /// </summary>
-        public string Thumbail { get; set; }
+        public string Thumbnail { get; set; }
 
         /// <summary>
         /// Whether the capture can be delayed or not
