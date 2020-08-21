@@ -1,7 +1,10 @@
 # Lexim MercadoPago SDK - Change Log
 
 ## 2.0.4 (Current)
-  - Removed System.Runtime.Caching. Fixes [#11](https://github.com/LeximSoluciones/Lexim-MercadoPago-Sdk/issues/11).
+  - Updated "Preapproval" with the lastest API version.
+  - Added resource "AuthorizedPayment".
+  - Added IPN support to "AuthorizedPayment" and "Preapproval".
+  - Now GetAccessToken is thread safe.
 
 ## 2.0.3
   - Added "status, date_created, last_modified" to Preapproval.

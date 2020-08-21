@@ -43,41 +43,64 @@ namespace MercadoPago.Resources
         #region Properties
 
         /// <summary>
-        ///  Identifier
+        ///  Preapproval ID
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        ///  Buy reason
+        ///  User's ID issuer of payment
         /// </summary>
-        public string Reason { get; set; }        
+        public int? PayerId { get; set; }
 
         /// <summary>
-        ///  Payer Email
+        ///  User's email issuer of payment
         /// </summary>
         [StringLength(256)]
         public string PayerEmail { get; set; }
 
         /// <summary>
-        ///  Return  URL
+        ///  URL to redirect the user when the preapproval is authorized
         /// </summary>
-        [StringLength(500)]
+        [StringLength(256)]
         public string BackUrl { get; set; }
 
         /// <summary>
-        /// Checkout access URL
+        ///  User's ID of payee
         /// </summary>
+        public int? CollectorId { get; set; }
+
+        /// <summary>
+        ///  Application ID of payee
+        /// </summary>
+        public long? ApplicationId { get; set; }
+
+        /// <summary>
+        /// Current preapproval status
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public PreapprovalStatus? Status { get; set; }
+
+        /// <summary>
+        /// Optional to enable automatic charging
+        /// </summary>
+        public AutoRecurring? AutoRecurring { get; set; }
+
+        /// <summary>
+        /// URL for accessing the authorization form
+        /// </summary>
+        [StringLength(256)]
         public string InitPoint { get; private set; }
 
         /// <summary>
-        /// Sandbox checkout access URL
+        /// URL for accessing the authorization form in a sandbox environment (for testing purposes)
         /// </summary>
-        public string SandboxInitPoint { get; set; }
+        [StringLength(256)]
+        public string SandboxInitPoint { get; private set; }
 
         /// <summary>
-        /// Auro Recurring Information
+        ///  Reason for authorization
         /// </summary>
-        public AutoRecurring? AutoRecurring { get; set; }
+        public string Reason { get; set; }
 
         /// <summary>
         /// Reference you can synchronize with your payment system
@@ -86,20 +109,20 @@ namespace MercadoPago.Resources
         public string ExternalReference { get; set; }
 
         /// <summary>
-        /// Preapproval's status
+        /// Creation date of this entity
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public PreapprovalStatus? Status { get; set; }
+        public DateTime? DateCreated { get; private set; }
 
         /// <summary>
-        /// Preapproval's creation date
+        /// Last modified date
         /// </summary>
-        public DateTime DateCreated { get; private set; }
+        public DateTime? LastModified { get; private set; }
 
         /// <summary>
-        /// Preapproval's last modified date
+        ///  ID of the subscription plan from which this preapproval was created
         /// </summary>
-        public DateTime LastModified { get; private set; }
+        [StringLength(256)]
+        public string PreapprovalPlanId { get; set; }
 
         #endregion
     }
